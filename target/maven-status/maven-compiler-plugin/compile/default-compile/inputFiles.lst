@@ -1,0 +1,11 @@
+/Users/kunaldipti/scholarbasket/SERVERSIDE/ServiceSideBasketDataFetchService/src/main/java/com/basket/app/config/CassandraConfig.java
+/Users/kunaldipti/scholarbasket/SERVERSIDE/ServiceSideBasketDataFetchService/src/main/java/com/basket/app/controller/BatchRequestController.java
+/Users/kunaldipti/scholarbasket/SERVERSIDE/ServiceSideBasketDataFetchService/src/main/java/com.basket.app/BasketDataHandlerApp.java
+/Users/kunaldipti/scholarbasket/SERVERSIDE/ServiceSideBasketDataFetchService/src/main/java/com/basket/app/pojo/Category.java
+/Users/kunaldipti/scholarbasket/SERVERSIDE/ServiceSideBasketDataFetchService/src/main/java/com/basket/app/repo/BatchRequestRepo.java
+/Users/kunaldipti/scholarbasket/SERVERSIDE/ServiceSideBasketDataFetchService/src/main/java/com/basket/app/pojo/BatchRequest.java
+/Users/kunaldipti/scholarbasket/SERVERSIDE/ServiceSideBasketDataFetchService/src/main/java/com/basket/app/service/BatchRequestServiceImpl.java
+/Users/kunaldipti/scholarbasket/SERVERSIDE/ServiceSideBasketDataFetchService/src/main/java/com/basket/app/pojo/Status.java
+/Users/kunaldipti/scholarbasket/SERVERSIDE/ServiceSideBasketDataFetchService/src/main/java/com/basket/app/repo/BaseRepo.java
+/Users/kunaldipti/scholarbasket/SERVERSIDE/ServiceSideBasketDataFetchService/src/main/java/com/basket/app/service/IBatchRequestService.java
+/Users/kunaldipti/scholarbasket/SERVERSIDE/ServiceSideBasketDataFetchService/src/main/java/com/basket/app/pojo/BasketResponse.java

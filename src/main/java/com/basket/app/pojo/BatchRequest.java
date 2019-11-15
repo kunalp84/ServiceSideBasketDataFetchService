@@ -5,7 +5,7 @@ import com.datastax.driver.mapping.annotations.PartitionKey;
 import com.datastax.driver.mapping.annotations.Table;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
-import sun.jvm.hotspot.debugger.cdbg.EnumType;
+
 
 import java.util.UUID;
 

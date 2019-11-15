@@ -26,7 +26,7 @@ public class CassandraConfig {
     @Bean
     public Cluster cluster(
             @Value("${cassandra.host:127.0.0.1}") String host,
-            @Value("${cassandra.cluster.name:cluster}") String clusterName,
+            @Value("${cassandra.cluster.name:Cluster}") String clusterName,
             @Value("${cassandra.port:9042}") int port) {
         return Cluster.builder()
                 .addContactPoint(host)
@@ -79,3 +79,6 @@ public class CassandraConfig {
         return BatchRequest.class;
     }
 }
+
+//CREATE KEYSPACE basket WITH replication = {'class':'SimpleStrategy', 'replication_factor' : 3};
+
