@@ -134,7 +134,7 @@ public class EsRepo {
         jsonMap.put("requirement", batchRequest.getRequirement());
         jsonMap.put("subjectName", batchRequest.getSubjectName());
         jsonMap.put("category", batchRequest.getCategory().toString());
-        jsonMap.put("id",batchRequest.getId());
+        jsonMap.put("id",batchRequest.getId().toString());
         IndexRequest indexRequest = new IndexRequest("requirement").type("batch")
                 .id(batchRequest.getId().toString()).source(jsonMap);
                 indexRequest.create(true);
