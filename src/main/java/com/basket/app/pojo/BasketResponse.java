@@ -7,5 +7,7 @@ import java.util.Date;
 public class BasketResponse<T> {
     private int sizeOfresponse;
     private Date timeOfResponse;
+    private String errorMessage;
+    private Status status;
     private T items;
 }

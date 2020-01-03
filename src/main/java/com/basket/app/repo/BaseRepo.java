@@ -4,6 +4,7 @@ import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.mapping.Mapper;
 import com.datastax.driver.mapping.MappingManager;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -18,6 +19,8 @@ public abstract class BaseRepo<T> {
     public BaseRepo(MappingManager mappingManager , Class<T> type) {
         this.mapper = mappingManager.mapper(type);
         this.session = mappingManager.getSession();
+
+        System.out.println("Session created "+session);
     }
 
 

@@ -1,5 +1,6 @@
 package com.basket.app.repo;
 
+import com.basket.app.pojo.BasketUser;
 import com.basket.app.pojo.BatchRequest;
 import com.basket.app.pojo.Category;
 import com.basket.app.solr.EsRepo;
@@ -22,16 +23,37 @@ import java.util.UUID;
 import static com.datastax.driver.core.querybuilder.QueryBuilder.*;
 
 @Repository
-public class BatchRequestRepo extends BaseRepo<BatchRequest> {
+public class BatchRequestRepo {
 
     private static final String TABLE ="batchrequest";
+
+
+    protected Mapper<BatchRequest> mapper;
+    protected Session session;
+
+
+    public BatchRequestRepo(MappingManager mappingManager ) {
+        this.mapper = mappingManager.mapper(BatchRequest.class);
+        this.session = mappingManager.getSession();
+
+        System.out.println("Session created "+session);
+    }
+
+
+
+    public BatchRequest save(BatchRequest obj) {
+        System.out.println("Inside save");
+
+        mapper.save(obj);
+
+        System.out.println("Completed save");
+        return obj;
+    }
 
     @Autowired
     EsRepo esRepo;
 
-    public BatchRequestRepo(MappingManager mappingManager, Class<BatchRequest> type) {
-        super(mappingManager, type);
-    }
+
 
     public BatchRequest find(String userName, UUID id) {
         return mapper.get(userName, id);

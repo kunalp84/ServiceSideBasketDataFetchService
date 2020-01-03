@@ -1,5 +1,6 @@
 package com.basket.app.config;
 
+import com.basket.app.pojo.BasketUser;
 import com.basket.app.pojo.BatchRequest;
 import com.basket.app.pojo.Category;
 import com.datastax.driver.core.Cluster;
@@ -78,6 +79,9 @@ public class CassandraConfig {
         System.out.println(json);
         return BatchRequest.class;
     }
+
+
+
 }
 
 //CREATE KEYSPACE basket WITH replication = {'class':'SimpleStrategy', 'replication_factor' : 3};

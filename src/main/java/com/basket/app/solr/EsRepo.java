@@ -1,6 +1,8 @@
 package com.basket.app.solr;
 //https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest-high-document-index.html
+import com.basket.app.pojo.BasketUser;
 import com.basket.app.pojo.BatchRequest;
+import com.basket.app.pojo.USERTYPE;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -18,6 +20,7 @@ import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.*;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
@@ -167,4 +170,75 @@ public class EsRepo {
 
 
     }
+
+    public void postBasketUserOnElasticServer(BasketUser basketUser, USERTYPE typeOfUser)
+    {
+
+        final CredentialsProvider credentialsProvider =new BasicCredentialsProvider();
+        credentialsProvider.setCredentials(AuthScope.ANY,new UsernamePasswordCredentials("username", "password"));
+        RestClientBuilder builder =RestClient.builder(new HttpHost("0.0.0.0", 9200, "http")).setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider));
+        RestHighLevelClient client = new RestHighLevelClient(builder);
+
+
+
+
+
+        Map<String, Object> jsonMap = new HashMap<>();
+        jsonMap.put("name", basketUser.getName());
+        jsonMap.put("category", basketUser.getCategory());
+        jsonMap.put("emailId", basketUser.getEmailId());
+        jsonMap.put("mobile", basketUser.getMobile());
+        jsonMap.put("mode",basketUser.getMode());
+        jsonMap.put("location",basketUser.getLocation());
+        jsonMap.put("freeTextRequirement",basketUser.getFreeTextRequirement());
+        jsonMap.put("industrialExperience",basketUser.getIndustrialExperience());
+        jsonMap.put("teachingExperience",basketUser.getTeachingExperience());
+        jsonMap.put("userType",basketUser.getUserType());
+        jsonMap.put("institute",basketUser.getInstitute());
+
+        jsonMap.put("mode",basketUser.getMode());
+        jsonMap.put("subject",basketUser.getSubject());
+
+System.out.println("THE JSON MAP" + basketUser.getMobile());
+        System.out.println(jsonMap);
+        IndexRequest indexRequest = new IndexRequest(typeOfUser.toString().toLowerCase()).type(typeOfUser.toString())
+              .id(basketUser.getName()).source(jsonMap);
+
+
+            UpdateRequest updateRequest = new UpdateRequest().index(typeOfUser.toString().toLowerCase()     ) .type(typeOfUser.toString()).id(basketUser.getName()).fetchSource(true).   upsert(indexRequest);
+       // indexRequest.create(true);
+        updateRequest.doc(indexRequest);
+
+        try {
+          client.update(updateRequest, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+       // System.out.println(response);
+        ActionListener<IndexResponse> listener = new ActionListener<IndexResponse>() {
+            @Override
+            public void onResponse(IndexResponse indexResponse) {
+                System.out.println(" USER INSERT onResponse called");
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                System.out.println(" USER INSERT on Failure called"+e);
+
+            }
+        };
+        // client.indexAsync(indexRequest, RequestOptions.DEFAULT, listener);
+
+
+        try {
+            client.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+
+
 }
