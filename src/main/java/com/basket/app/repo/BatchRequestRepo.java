@@ -1,21 +1,18 @@
 package com.basket.app.repo;
 
-import com.basket.app.pojo.BasketUser;
 import com.basket.app.pojo.BatchRequest;
 import com.basket.app.pojo.Category;
 import com.basket.app.solr.EsRepo;
-import com.basket.app.solr.SolarRepo;
 import com.datastax.driver.core.*;
 import com.datastax.driver.core.querybuilder.Ordering;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
-import com.datastax.driver.extras.codecs.enums.EnumNameCodec;
 import com.datastax.driver.mapping.Mapper;
 import com.datastax.driver.mapping.MappingManager;
-import org.apache.solr.client.solrj.SolrServerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -24,6 +21,7 @@ import static com.datastax.driver.core.querybuilder.QueryBuilder.*;
 
 @Repository
 public class BatchRequestRepo {
+    private static final Logger LOGGER = LoggerFactory.getLogger(BatchRequestRepo.class);
 
     private static final String TABLE ="batchrequest";
 
@@ -36,17 +34,17 @@ public class BatchRequestRepo {
         this.mapper = mappingManager.mapper(BatchRequest.class);
         this.session = mappingManager.getSession();
 
-        System.out.println("Session created "+session);
+        LOGGER.info("Session created "+session);
     }
 
 
 
     public BatchRequest save(BatchRequest obj) {
-        System.out.println("Inside save");
+        LOGGER.info("Inside save");
 
         mapper.save(obj);
 
-        System.out.println("Completed save");
+        LOGGER.info("Completed save");
         return obj;
     }
 
@@ -78,7 +76,7 @@ public class BatchRequestRepo {
 
     public List<BatchRequest> findAllBatches(int start, int size)
     {
-        System.out.println("Here-----");
+        LOGGER.info("Here-----");
         Ordering order = QueryBuilder.desc( "id" );
         Statement select  = select().all().from("batchrequest_ct_id_un").where(eq("category", "ENGINEERING")).orderBy(order);
         CassandraPaging cassandraPaging = new CassandraPaging(session);
@@ -92,13 +90,13 @@ public class BatchRequestRepo {
                 objectRow.setUserName(dataRow.getString("user_name"));
                 objectRow.setSubjectName(dataRow.getString("subject_name"));
                 objectRow.setRequirement(dataRow.getString("requirement"));
-                System.out.println("Going to ES");
+                LOGGER.info("Going to ES");
                 esRepo.postBatchRequestOnElasticServer(objectRow);
-                System.out.println("Back from  ES");
+                LOGGER.info("Back from  ES");
                 batchRequests.add(objectRow);
             }
 
-
+        LOGGER.info("End-----");
         return batchRequests;
     }
 

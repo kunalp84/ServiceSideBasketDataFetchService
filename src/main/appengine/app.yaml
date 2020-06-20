@@ -1,0 +1,7 @@
+runtime: java11
+instance_class: F4
+handlers:
+  - url: /.*
+    script: this field is required, but ignored
+env_variables:
+  SPRING_PROFILES_ACTIVE: 'uat'

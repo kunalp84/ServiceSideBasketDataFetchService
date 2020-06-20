@@ -9,6 +9,7 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.apache.http.client.config.RequestConfig.Builder;
@@ -16,6 +17,20 @@ import org.apache.http.client.config.RequestConfig.Builder;
 
 @Configuration
 public class ElasticServerConfig {
+    @Value("${es.hostname}")
+    private String hostname;
+
+    @Value("${es.port}")
+    private String port;
+
+    @Value("${es.scheme}")
+    private String scheme;
+
+    @Value("${es.userName}")
+    private String userName;
+
+    @Value("${es.password}")
+    private String password;
 
    /*     @Bean(destroyMethod = "close")
       public  RestClient transportClient() {
@@ -36,9 +51,9 @@ public class ElasticServerConfig {
     @Bean
     public RestHighLevelClient restHighLevelClient(){
         final CredentialsProvider credentialsProvider =new BasicCredentialsProvider();
-        credentialsProvider.setCredentials(AuthScope.ANY,new UsernamePasswordCredentials("username", "password"));
-        RestClientBuilder builder =RestClient.builder(new HttpHost("0.0.0.0", 9200, "http")).setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider));
-
+        credentialsProvider.setCredentials(AuthScope.ANY,new UsernamePasswordCredentials(userName, password));
+        //RestClientBuilder builder =RestClient.builder(new HttpHost("0.0.0.0", 9200, "http")).setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider));
+        RestClientBuilder builder =RestClient.builder(new HttpHost(hostname, Integer.parseInt(port), scheme)).setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider));
         RestHighLevelClient client = new RestHighLevelClient(builder);
         return client;
     }

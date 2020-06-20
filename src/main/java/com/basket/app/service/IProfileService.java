@@ -9,4 +9,6 @@ public interface IProfileService {
     BasketUser updateOnlyIfExists(BasketUser basketUser);
 
     BasketUser createNewUser(BasketUser basketUser);
+
+    public BasketUser recordVerificationOfUser(String userName, String token);
 }

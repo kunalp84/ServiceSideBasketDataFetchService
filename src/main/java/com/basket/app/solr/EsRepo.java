@@ -13,20 +13,24 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.nio.entity.NStringEntity;
-import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.common.SolrInputDocument;
+
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
+import org.elasticsearch.action.delete.DeleteRequest;
+import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.update.UpdateRequest;
+import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.*;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 //import org.elasticsearch.common.transport.InetSocketTransportAddress;
 //import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -44,9 +48,10 @@ import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 public class EsRepo {
 
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(EsRepo.class);
 
 
-    public void pushteacherEnquiryData(BatchRequest request) throws IOException, SolrServerException {
+    public void pushteacherEnquiryData(BatchRequest request) throws IOException{
 
         String json = "{" +
                 "\"user\":\"kimchy\"," +
@@ -72,7 +77,7 @@ public class EsRepo {
     }
 
 
-    public void pushteacherEnquiryDataUsingRest(BatchRequest batchRequest) throws IOException, SolrServerException {
+    public void pushteacherEnquiryDataUsingRest(BatchRequest batchRequest) throws IOException {
 
         String json = "{" +
                 "\"user\":\"kimchy\"," +
@@ -140,24 +145,31 @@ public class EsRepo {
         jsonMap.put("id",batchRequest.getId().toString());
         IndexRequest indexRequest = new IndexRequest("requirement").type("batch")
                 .id(batchRequest.getId().toString()).source(jsonMap);
-                indexRequest.create(true);
+              //  indexRequest.create(true);
+
+
+        UpdateRequest updateRequest = new UpdateRequest().index("requirement"    ) .type("batch").id(batchRequest.getId().toString()).fetchSource(true).   upsert(indexRequest);
+        // indexRequest.create(true);
+        updateRequest.doc(indexRequest);
+
 
         ActionListener<IndexResponse> listener = new ActionListener<IndexResponse>() {
             @Override
             public void onResponse(IndexResponse indexResponse) {
-                System.out.println("onResponse called");
+                LOGGER.info("onResponse called");
             }
 
             @Override
             public void onFailure(Exception e) {
-                System.out.println("on Failure called"+e);
+                LOGGER.info("on Failure called"+e);
 
             }
         };
        // client.indexAsync(indexRequest, RequestOptions.DEFAULT, listener);
         try {
-            IndexResponse indexResponse = client.index(indexRequest, RequestOptions.DEFAULT);
-            System.out.println(indexRequest);
+            UpdateResponse updateResponse = client.update(updateRequest, RequestOptions.DEFAULT);
+
+            LOGGER.info(""+indexRequest);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -199,13 +211,14 @@ public class EsRepo {
         jsonMap.put("mode",basketUser.getMode());
         jsonMap.put("subject",basketUser.getSubject());
 
-System.out.println("THE JSON MAP" + basketUser.getMobile());
-        System.out.println(jsonMap);
+LOGGER.info("THE JSON MAP" + basketUser.getMobile());
+        LOGGER.info(""+jsonMap);
         IndexRequest indexRequest = new IndexRequest(typeOfUser.toString().toLowerCase()).type(typeOfUser.toString())
               .id(basketUser.getName()).source(jsonMap);
 
 
-            UpdateRequest updateRequest = new UpdateRequest().index(typeOfUser.toString().toLowerCase()     ) .type(typeOfUser.toString()).id(basketUser.getName()).fetchSource(true).   upsert(indexRequest);
+            UpdateRequest updateRequest = new UpdateRequest().index(typeOfUser.toString().toLowerCase()     ) .type(typeOfUser.toString()).id(basketUser.getName()).fetchSource(true).
+                    upsert(indexRequest);
        // indexRequest.create(true);
         updateRequest.doc(indexRequest);
 
@@ -218,12 +231,12 @@ System.out.println("THE JSON MAP" + basketUser.getMobile());
         ActionListener<IndexResponse> listener = new ActionListener<IndexResponse>() {
             @Override
             public void onResponse(IndexResponse indexResponse) {
-                System.out.println(" USER INSERT onResponse called");
+                LOGGER.info(" USER INSERT onResponse called");
             }
 
             @Override
             public void onFailure(Exception e) {
-                System.out.println(" USER INSERT on Failure called"+e);
+                LOGGER.info(" USER INSERT on Failure called"+e);
 
             }
         };
@@ -238,6 +251,62 @@ System.out.println("THE JSON MAP" + basketUser.getMobile());
 
 
     }
+
+
+
+    public void deleteBatchRequestOnElasticServer(String id)
+    {
+
+        final CredentialsProvider credentialsProvider =new BasicCredentialsProvider();
+        credentialsProvider.setCredentials(AuthScope.ANY,new UsernamePasswordCredentials("username", "password"));
+        RestClientBuilder builder =RestClient.builder(new HttpHost("0.0.0.0", 9200, "http")).setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider));
+        RestHighLevelClient client = new RestHighLevelClient(builder);
+
+
+
+
+
+
+     //   IndexRequest indexRequest = new IndexRequest("requirement").type("batch")
+    //            .id(batchRequest.getId().toString()).source(jsonMap);
+    //    indexRequest.create(true);
+
+        DeleteRequest deleteRequest = new DeleteRequest("requirement","batch",id);
+
+
+        ActionListener<IndexResponse> listener = new ActionListener<IndexResponse>() {
+            @Override
+            public void onResponse(IndexResponse indexResponse) {
+                LOGGER.info("onResponse called");
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+               LOGGER.info("on Failure called"+e);
+
+            }
+        };
+        // client.indexAsync(indexRequest, RequestOptions.DEFAULT, listener);
+        try {
+            DeleteResponse deleteResponse = client.delete(deleteRequest, RequestOptions.DEFAULT);
+
+           LOGGER.info(""+deleteResponse);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            client.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+
+
+
 
 
 

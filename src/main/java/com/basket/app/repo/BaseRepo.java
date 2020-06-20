@@ -1,9 +1,12 @@
 package com.basket.app.repo;
 
+import com.basket.app.controller.BasicAuthenticationController;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.mapping.Mapper;
 import com.datastax.driver.mapping.MappingManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -11,7 +14,7 @@ import java.util.List;
 public abstract class BaseRepo<T> {
     protected Mapper<T> mapper;
     protected Session session;
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(BaseRepo.class);
     public BaseRepo(){
 
     }
@@ -20,17 +23,17 @@ public abstract class BaseRepo<T> {
         this.mapper = mappingManager.mapper(type);
         this.session = mappingManager.getSession();
 
-        System.out.println("Session created "+session);
+        LOGGER.info("Session created "+session);
     }
 
 
 
     public T save(T obj) {
-        System.out.println("Inside save");
+        LOGGER.info("Inside save");
 
         mapper.save(obj);
 
-        System.out.println("Completed save");
+        LOGGER.info("Completed save");
         return obj;
     }
 

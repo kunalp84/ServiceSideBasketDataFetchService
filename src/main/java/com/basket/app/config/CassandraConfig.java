@@ -4,13 +4,17 @@ import com.basket.app.pojo.BasketUser;
 import com.basket.app.pojo.BatchRequest;
 import com.basket.app.pojo.Category;
 import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.DataType;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.mapping.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -22,19 +26,29 @@ import static com.datastax.driver.mapping.NamingConventions.LOWER_CAMEL_CASE;
 import static com.datastax.driver.mapping.NamingConventions.LOWER_SNAKE_CASE;
 
 @Configuration
+@Profile("local")
 public class CassandraConfig {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CassandraConfig.class);
 
     @Bean
     public Cluster cluster(
-            @Value("${cassandra.host:127.0.0.1}") String host,
-            @Value("${cassandra.cluster.name:Cluster}") String clusterName,
-            @Value("${cassandra.port:9042}") int port) {
-        return Cluster.builder()
+            @Value("${cassandra.host}") String host,
+            @Value("${cassandra.cluster.name}") String clusterName,
+            @Value("${cassandra.port}") int port) {
+        Cluster cluster = Cluster.builder()
                 .addContactPoint(host)
                 .withPort(port)
                 .withClusterName(clusterName)
-                .build();
+                                .build();
+            cluster.getConfiguration().getCodecRegistry().register(new CustomCategoryCodec( DataType.varchar(),  Category.class));
+
+            return cluster;
+
     }
+
+
+
+
 
     @Bean
     public Session session(Cluster cluster, @Value("${cassandra.keyspace:basket}") String keyspace)
@@ -76,7 +90,7 @@ public class CassandraConfig {
         batchRequest.setUserName("user1");
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(batchRequest);
-        System.out.println(json);
+        LOGGER.info(json);
         return BatchRequest.class;
     }
 

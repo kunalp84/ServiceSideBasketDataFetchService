@@ -7,6 +7,8 @@ import com.datastax.driver.core.querybuilder.Ordering;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.datastax.driver.mapping.Mapper;
 import com.datastax.driver.mapping.MappingManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -19,23 +21,24 @@ public class BasketUserRepo  {
     private static final String TABLE ="basketuser";
     protected Mapper<BasketUser> mapper;
     protected Session session;
+    private static final Logger LOGGER = LoggerFactory.getLogger(BasketUserRepo.class);
 
 
     public BasketUserRepo(MappingManager mappingManager ) {
         this.mapper = mappingManager.mapper(BasketUser.class);
         this.session = mappingManager.getSession();
 
-        System.out.println("Session created "+session);
+       LOGGER.info("Session created "+session);
     }
 
 
 
     public BasketUser save(BasketUser obj) {
-        System.out.println("Inside save");
+        LOGGER.info("Inside save");
 
         mapper.save(obj);
 
-        System.out.println("Completed save");
+        LOGGER.info("Completed save");
         return obj;
     }
 
@@ -48,10 +51,10 @@ public class BasketUserRepo  {
     public BasketUser findByUserName(String userName) {
       //  Ordering order = QueryBuilder.desc( "id" );
 
-        System.out.println("session");
-        System.out.println(session);
-        System.out.println("session.execute(select().all().from(TABLE)");
-        System.out.println(session.execute(select().all().from(TABLE)));
+        LOGGER.info("session");
+        LOGGER.info("" + session);
+        LOGGER.info("session.execute(select().all().from(TABLE)");
+        LOGGER.info(""+session.execute(select().all().from(TABLE)));
 
         final ResultSet result = session.execute(select().all().from(TABLE).where(eq("name", userName)));//.orderBy(order));
         return mapper.map(result).one();

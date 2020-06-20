@@ -27,7 +27,24 @@ industrial_experience text,
     primary key(name,user_type)
 )
 
+alter table basketuser ADD  enabled boolean;
+alter table basketuser ADD  ui_password text;
+alter table basketuser ADD  vertoken text;
+alter table basketuser ADD  created date;
+alter table basketuser ADD  updated date;
+
+//add created and last updated in each table
+
 
 insert into basket.basketuser
 (name,user_type,category,confirmpassword,email_id,free_text_requirement,industrial_experience,institute,location,mobile,mode,password,subject,teaching_experience)
 values('boo','TEACHER','ENGINEERING','boo','boo','boo','wds','wew','weqeqwe','www','ww','boo','boo','boo');
+
+
+create table otpuser
+(
+   name text,
+   created    date,
+   otp_key    text,
+    primary key(name)
+)
